@@ -42,16 +42,33 @@ class TrafficFetchJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $user = User::lockForUpdate()->find($this->userId);
-        if (!$user) return;
-
-        $user->t = time();
-        $user->u = $user->u + ($this->u * $this->server['rate']);
-        $user->d = $user->d + ($this->d * $this->server['rate']);
-        if (!$user->save()) {
-            info("流量更新失败\n未记录用户ID:{$this->userId}\n未记录上行:{$user->u}\n未记录下行:{$user->d}");
-        }
+        \DB::transaction(function () {
+            $user = \DB::table('v2_user')->lockForUpdate()->where('id', $this->userId)->first();
+        
+            if (!$user) {
+                return;
+            }
+        
+            $newTime = time();
+            $newU = $user->u + ($this->u * $this->server['rate']);
+            $newD = $user->d + ($this->d * $this->server['rate']);
+        
+            $updatedRows = \DB::table('v2_user')
+                ->where('id', $this->userId)
+                ->update([
+                    't' => $newTime,
+                    'u' => $newU,
+                    'd' => $newD,
+                ]);
+        
+            if (!$updatedRows) {
+                info("流量更新失败\n未记录用户ID:{$this->userId}\n未记录上行:{$this->u}\n未记录下行:{$this->d}");
+                $this->fail();
+            } else {
+                
+            }
+        }, 3);
     }
 }

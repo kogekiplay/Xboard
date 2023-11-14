@@ -161,6 +161,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Hhxsv5\LaravelS\Illuminate\LaravelSServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -175,6 +176,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\SettingServiceProvider::class,
 
     ],
 
@@ -237,5 +239,5 @@ return [
     | The only modification by laravel config
     |
     */
-    'version' => '1.7.4.1681103823832'
+    'version' => '1.7.5.1685907718051'
 ];

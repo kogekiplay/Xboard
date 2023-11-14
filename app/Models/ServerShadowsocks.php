@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerShadowsocks extends Model
 {
@@ -15,6 +16,13 @@ class ServerShadowsocks extends Model
         'group_id' => 'array',
         'route_id' => 'array',
         'tags' => 'array',
-        'obfs_settings' => 'array'
+        'excludes' => 'array',
+        'obfs_settings' => 'array',
+        'ips' => 'array'
     ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id');
+    }
 }

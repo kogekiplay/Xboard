@@ -16,6 +16,8 @@ class ServerTrojanSave extends FormRequest
         return [
             'show' => '',
             'name' => 'required',
+            'network' => 'required',
+            'networkSettings' => 'nullable',
             'group_id' => 'required|array',
             'route_id' => 'nullable|array',
             'parent_id' => 'nullable|integer',
@@ -25,6 +27,8 @@ class ServerTrojanSave extends FormRequest
             'allow_insecure' => 'nullable|in:0,1',
             'server_name' => 'nullable',
             'tags' => 'nullable|array',
+            'excludes' => 'nullable|array',
+            'ips' => 'nullable|array',
             'rate' => 'required|numeric'
         ];
     }
@@ -33,6 +37,7 @@ class ServerTrojanSave extends FormRequest
     {
         return [
             'name.required' => '节点名称不能为空',
+            'network.required' => '传输协议不能为空',
             'group_id.required' => '权限组不能为空',
             'group_id.array' => '权限组格式不正确',
             'route_id.array' => '路由组格式不正确',

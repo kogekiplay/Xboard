@@ -1,0 +1,9 @@
+version: '3'
+services:
+  xboard:
+    build: 
+      context: .
+    volumes:
+      - ./.env:/www/.env
+      - ./.docker/.data/:/www/.docker/.data/
+    network_mode: host

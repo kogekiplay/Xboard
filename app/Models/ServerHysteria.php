@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerHysteria extends Model
 {
@@ -14,6 +15,21 @@ class ServerHysteria extends Model
         'updated_at' => 'timestamp',
         'group_id' => 'array',
         'route_id' => 'array',
-        'tags' => 'array'
+        'tags' => 'array',
+        'ips' => 'array',
+        'excludes' => 'array'
     ];
+
+    // ALPN映射表
+    public static $alpnMap = [
+        0 => 'hysteria',
+        1 => 'http/1.1',
+        2 => 'h2',
+        3 => 'h3'
+    ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id');
+    }
 }

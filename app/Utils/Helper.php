@@ -110,7 +110,7 @@ class Helper
 
     public static function getSubscribeUrl($path)
     {
-        $subscribeUrls = explode(',', config('v2board.subscribe_url'));
+        $subscribeUrls = explode(',', admin_setting('subscribe_url'));
         $subscribeUrl = $subscribeUrls[rand(0, count($subscribeUrls) - 1)];
         if ($subscribeUrl) return $subscribeUrl . $path;
         return url($path);
@@ -119,5 +119,11 @@ class Helper
     public static function randomPort($range) {
         $portRange = explode('-', $range);
         return rand($portRange[0], $portRange[1]);
+    }
+
+    public static function base64EncodeUrlSafe($data)
+    {
+        $encoded = base64_encode($data);
+        return str_replace(['+', '/', '='], ['-', '_', ''], $encoded);
     }
 }

@@ -99,8 +99,8 @@ class StripeCheckout {
         \Stripe\Stripe::setApiKey($this->config['stripe_sk_live']);
         try {
             $event = \Stripe\Webhook::constructEvent(
-                file_get_contents('php://input'),
-                $_SERVER['HTTP_STRIPE_SIGNATURE'],
+                get_request_content(),
+                request()->header('HTTP_STRIPE_SIGNATURE'),
                 $this->config['stripe_webhook_key']
             );
         } catch (\Stripe\Error\SignatureVerification $e) {
@@ -127,7 +127,7 @@ class StripeCheckout {
             default:
                 abort(500, 'event is not support');
         }
-        die('success');
+        return('success');
     }
 
     private function exchange($from, $to)

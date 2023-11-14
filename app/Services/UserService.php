@@ -60,7 +60,7 @@ class UserService
         if ($user->plan->reset_traffic_method === 2) return null;
         switch (true) {
             case ($user->plan->reset_traffic_method === NULL): {
-                $resetTrafficMethod = config('v2board.reset_traffic_method', 0);
+                $resetTrafficMethod = admin_setting('reset_traffic_method', 0);
                 switch ((int)$resetTrafficMethod) {
                     // month first day
                     case 0:
@@ -168,7 +168,7 @@ class UserService
         return true;
     }
 
-    public function trafficFetch(array $server, string $protocol, array $data)
+    public function trafficFetch(array $server, string $protocol, array $data, array $childServer = null)
     {
         $statService = new StatisticalService();
         $statService->setStartAt(strtotime(date('Y-m-d')));
@@ -177,9 +177,17 @@ class UserService
         foreach (array_keys($data) as $userId) {
             $u = $data[$userId][0];
             $d = $data[$userId][1];
-            TrafficFetchJob::dispatch($u, $d, $userId, $server, $protocol);
+            // 如果存在子节点则使用过子节点的倍率进行进行流量计算，该计算方式依赖服务器IP地址
+            if(!blank($childServer)){
+                TrafficFetchJob::dispatch($u, $d, $userId, $childServer, $protocol);
+                $statService->statUser($childServer['rate'], $userId, $u, $d);
+                $statService->statServer($childServer['id'], $protocol, $u, $d);
+            }else{
+                TrafficFetchJob::dispatch($u, $d, $userId, $server, $protocol);
+                $statService->statUser($server['rate'], $userId, $u, $d);
+            }
             $statService->statServer($server['id'], $protocol, $u, $d);
-            $statService->statUser($server['rate'], $userId, $u, $d);
+
         }
     }
 }

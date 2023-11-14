@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServerTrojan extends Model
 {
@@ -14,6 +15,14 @@ class ServerTrojan extends Model
         'updated_at' => 'timestamp',
         'group_id' => 'array',
         'route_id' => 'array',
-        'tags' => 'array'
+        'networkSettings' => 'array',
+        'tags' => 'array',
+        'excludes' => 'array',
+        'ips' => 'array'
     ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id', 'id');
+    }
 }

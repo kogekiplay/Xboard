@@ -6,6 +6,7 @@ use App\Models\ServerHysteria;
 use App\Models\ServerLog;
 use App\Models\ServerRoute;
 use App\Models\ServerShadowsocks;
+use App\Models\ServerVless;
 use App\Models\User;
 use App\Models\ServerVmess;
 use App\Models\ServerTrojan;
@@ -15,6 +16,37 @@ use Illuminate\Support\Facades\Cache;
 
 class ServerService
 {
+    public function getAvailableVless(User $user):array
+    {
+        $servers = [];
+        $model = ServerVless::orderBy('sort', 'ASC');
+        $server = $model->get();
+        foreach ($server as $key => $v) {
+            if (!$v['show']) continue;
+            $serverData = $v->toArray();
+
+            $serverData['type'] = 'vless';
+            if (!in_array($user->group_id, $serverData['group_id'])) continue;
+            if (strpos($serverData['port'], '-') !== false) {
+                $serverData['port'] = Helper::randomPort($serverData['port']);
+            }
+            if ($serverData['parent_id']) {
+                $serverData['last_check_at'] = Cache::get(CacheKey::get('SERVER_VLESS_LAST_CHECK_AT', $serverData['parent_id']));
+            } else {
+                $serverData['last_check_at'] = Cache::get(CacheKey::get('SERVER_VLESS_LAST_CHECK_AT', $serverData['id']));
+            }
+            if (isset($serverData['tls_settings'])) {
+                if (isset($serverData['tls_settings']['private_key'])) {
+                    unset($serverData['tls_settings']['private_key']);
+                }
+            }
+            
+            $servers[] = $serverData;
+        }
+
+
+        return $servers;
+    }
 
     public function getAvailableVmess(User $user):array
     {
@@ -73,6 +105,7 @@ class ServerService
             $servers[$key]['last_check_at'] = Cache::get(CacheKey::get('SERVER_HYSTERIA_LAST_CHECK_AT', $v['id']));
             if (!in_array($user->group_id, $v['group_id'])) continue;
             if (strpos($v['port'], '-') !== false) {
+                $servers[$key]['ports'] = $v['port'];
                 $servers[$key]['port'] = Helper::randomPort($v['port']);
             }
             if (isset($servers[$v['parent_id']])) {
@@ -109,12 +142,15 @@ class ServerService
 
     public function getAvailableServers(User $user)
     {
-        $servers = array_merge(
-            $this->getAvailableShadowsocks($user),
-            $this->getAvailableVmess($user),
-            $this->getAvailableTrojan($user),
-            $this->getAvailableHysteria($user)
-        );
+        $servers = Cache::remember('serversAvailable_'. $user->id, 5, function() use($user){
+            return array_merge(
+                $this->getAvailableShadowsocks($user),
+                $this->getAvailableVmess($user),
+                $this->getAvailableTrojan($user),
+                $this->getAvailableHysteria($user),
+                $this->getAvailableVless($user)
+            );
+        });
         $tmp = array_column($servers, 'sort');
         array_multisort($tmp, SORT_ASC, $servers);
         return array_map(function ($server) {
@@ -196,6 +232,17 @@ class ServerService
         return $servers;
     }
 
+    public function getAllVLess()
+    {
+        $servers = ServerVless::orderBy('sort', 'ASC')
+            ->get()
+            ->toArray();
+        foreach ($servers as $k => $v) {
+            $servers[$k]['type'] = 'vless';
+        }
+        return $servers;
+    }
+
     public function getAllTrojan()
     {
         $servers = ServerTrojan::orderBy('sort', 'ASC')
@@ -222,7 +269,14 @@ class ServerService
     {
         foreach ($servers as $k => $v) {
             $serverType = strtoupper($v['type']);
-            $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['parent_id'] ?? $v['id']));
+
+            $servers[$k]['online'] = Cache::get(CacheKey::get("SERVER_{$serverType}_ONLINE_USER", $v['parent_id'] ?? $v['id'])) ?? 0;
+            // 如果是子节点，先尝试从缓存中获取
+            if($pid = $v['parent_id']){
+                // 获取缓存
+                $onlineUsers = Cache::get(CacheKey::get('MULTI_SERVER_' . $serverType . '_ONLINE_USER', $pid)) ?? [];
+                $servers[$k]['online'] = (collect($onlineUsers)->whereIn('ip', $v['ips'])->sum('online_user')) . "|{$servers[$k]['online']}";
+            }
             $servers[$k]['last_check_at'] = Cache::get(CacheKey::get("SERVER_{$serverType}_LAST_CHECK_AT", $v['parent_id'] ?? $v['id']));
             $servers[$k]['last_push_at'] = Cache::get(CacheKey::get("SERVER_{$serverType}_LAST_PUSH_AT", $v['parent_id'] ?? $v['id']));
             if ((time() - 300) >= $servers[$k]['last_check_at']) {
@@ -241,7 +295,8 @@ class ServerService
             $this->getAllShadowsocks(),
             $this->getAllVMess(),
             $this->getAllTrojan(),
-            $this->getAllHysteria()
+            $this->getAllHysteria(),
+            $this->getAllVLess()
         );
         $this->mergeData($servers);
         $tmp = array_column($servers, 'sort');
@@ -272,6 +327,41 @@ class ServerService
                 return ServerTrojan::find($serverId);
             case 'hysteria':
                 return ServerHysteria::find($serverId);
+            case 'vless':
+                return ServerVless::find($serverId);
+            default:
+                return false;
+        }
+    }
+
+    // 根据节点IP和父级别节点ID查询字节点
+    public function getChildServer($serverId, $serverType, $nodeIp){
+        switch ($serverType) {
+            case 'vmess':
+                return ServerVmess::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'shadowsocks':
+                return ServerShadowsocks::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'trojan':
+                return ServerTrojan::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'hysteria':
+                return ServerHysteria::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
+            case 'vless':
+                return ServerVless::query()
+                        ->where("parent_id", $serverId)
+                        ->whereJsonContains('ips', $nodeIp)
+                        ->first();
             default:
                 return false;
         }

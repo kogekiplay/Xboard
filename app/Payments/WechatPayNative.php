@@ -63,17 +63,17 @@ class WechatPayNative {
 
     public function notify($params)
     {
-        $data = Helper::xml2array(file_get_contents('php://input'));
+        $data = Helper::xml2array(get_request_content());
         $gateway = Omnipay::create('WechatPay');
         $gateway->setAppId($this->config['app_id']);
         $gateway->setMchId($this->config['mch_id']);
         $gateway->setApiKey($this->config['api_key']);
         $response = $gateway->completePurchase([
-            'request_params' => file_get_contents('php://input')
+            'request_params' => get_request_content()
         ])->send();
 
         if (!$response->isPaid()) {
-            die('FAIL');
+            return('FAIL');
         }
 
         return [
