@@ -77,7 +77,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.REGISTRY }}/xboard:latest,${{ env.REGISTRY }}/xboard,${{ env.REGISTRY }}/xboard:${{ steps.get_version.outputs.version }}
+          tags: ${{ env.REGISTRY }}/cedar2025/xboard:latest,${{ env.REGISTRY }}/cedar2025/xboard,${{ env.REGISTRY }}/cedar2025/xboard:${{ steps.get_version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
