@@ -52,7 +52,7 @@ class XboardInstall extends Command
             if (\File::exists(base_path() . '/.env') && $this->getEnvValue('INSTALLED')) {
                 $securePath = admin_setting('secure_path', admin_setting('frontend_admin_path', hash('crc32b', config('app.key'))));
                 $this->info("访问 http(s)://你的站点/{$securePath} 进入管理面板，你可以在用户中心修改你的密码。");
-                abort(500, '如需重新安装请删除目录下 .env 文件');
+                abort(500, '如需重新安装请修改目录下 .env 文件的 INSTALLED 为 false');
                 \Artisan::call('config:cache');
             }
 
