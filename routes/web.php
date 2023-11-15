@@ -28,7 +28,7 @@ Route::get('/', function (Request $request) {
         'logo' => admin_setting('logo')
     ];
 
-    if (!config("theme.{$renderParams['theme']}")) {
+    if (!admin_setting("theme_{$renderParams['theme']}")) {
         $themeService = new ThemeService($renderParams['theme']);
         $themeService->init();
     }

@@ -30,7 +30,7 @@ class ThemeController extends Controller
             $themeConfig = json_decode(File::get($themeConfigFile), true);
             if (!isset($themeConfig['configs']) || !is_array($themeConfig)) continue;
             $themeConfigs[$theme] = $themeConfig;
-            if (config("theme.{$theme}")) continue;
+            if (admin_setting("theme_{$theme}")) continue;
             $themeService = new ThemeService($theme);
             $themeService->init();
         }
