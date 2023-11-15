@@ -26,7 +26,7 @@ return new class extends Migration
 
             // 如果是不是sqlite才添加多个索引
             if(config('database.default') !== 'sqlite'){
-                $table->index(['user_id','sever_rate','record_at']);
+                $table->index(['user_id','server_rate','record_at']);
                 $table->unique(['server_rate', 'user_id', 'record_at'], 'server_rate_user_id_record_at');
             }
 
