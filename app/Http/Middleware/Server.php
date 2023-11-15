@@ -18,14 +18,18 @@ class Server
     {
         $request->validate([
             'token' => ['required','string',function ($attribute, $value, $fail) {
-                if ($value !== admin_setting('server_token')) {
+                if ($value != admin_setting('server_token')) {
                     $fail("The $attribute is error.");
                 }
             }],
             'node_type' => [
                 'required',
                 'string',
-                'regex:/^(?i)(hysteria|vless|trojan|vmess|v2ray|tuic)$/'
+                'regex:/^(?i)(hysteria|vless|trojan|vmess|v2ray|tuic)$/',
+                function ($attribute, $value, $fail) {
+                    // 将值转换为小写
+                    request()->merge([$attribute => strtolower($value)]);
+                },
             ],
             'node_id' => 'required'
         ]);
