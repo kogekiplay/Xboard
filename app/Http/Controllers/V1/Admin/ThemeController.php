@@ -37,7 +37,7 @@ class ThemeController extends Controller
         return response([
             'data' => [
                 'themes' => $themeConfigs,
-                'active' => admin_setting('frontend_theme', 'v2board')
+                'active' => admin_setting('frontend_theme', 'Xboard')
             ]
         ]);
     }

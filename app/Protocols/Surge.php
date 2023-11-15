@@ -21,7 +21,7 @@ class Surge
         $servers = $this->servers;
         $user = $this->user;
 
-        $appName = admin_setting('app_name', 'V2Board');
+        $appName = admin_setting('app_name', 'XBoard');
 
         $proxies = '';
         $proxyGroup = '';

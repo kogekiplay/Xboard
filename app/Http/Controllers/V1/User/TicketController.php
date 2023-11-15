@@ -146,10 +146,7 @@ class TicketController extends Controller
         }
         if (!in_array(
             $request->input('withdraw_method'),
-            config(
-                'v2board.commission_withdraw_method',
-                Dict::WITHDRAW_METHOD_WHITELIST_DEFAULT
-            )
+            admin_setting('commission_withdraw_method',Dict::WITHDRAW_METHOD_WHITELIST_DEFAULT)
         )) {
             abort(500, __('Unsupported withdrawal method'));
         }

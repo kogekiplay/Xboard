@@ -39,11 +39,11 @@ class ConfigController extends Controller
     {
         $obj = new SendEmailJob([
             'email' => $request->user['email'],
-            'subject' => 'This is v2board test email',
+            'subject' => 'This is xboard test email',
             'template_name' => 'notify',
             'template_value' => [
-                'name' => admin_setting('app_name', 'V2Board'),
-                'content' => 'This is v2board test email',
+                'name' => admin_setting('app_name', 'XBoard'),
+                'content' => 'This is xboard test email',
                 'url' => admin_setting('app_url')
             ]
         ]);
@@ -107,7 +107,7 @@ class ConfigController extends Controller
                 'show_info_to_server_enable' => (int)admin_setting('show_info_to_server_enable', 0)
             ],
             'frontend' => [
-                'frontend_theme' => admin_setting('frontend_theme', 'v2board'),
+                'frontend_theme' => admin_setting('frontend_theme', 'Xboard'),
                 'frontend_theme_sidebar' => admin_setting('frontend_theme_sidebar', 'light'),
                 'frontend_theme_header' => admin_setting('frontend_theme_header', 'dark'),
                 'frontend_theme_color' => admin_setting('frontend_theme_color', 'default'),

@@ -21,7 +21,7 @@ class Clash
     {
         $servers = $this->servers;
         $user = $this->user;
-        $appName = admin_setting('app_name', 'V2Board');
+        $appName = admin_setting('app_name', 'XBoard');
         $defaultConfig = base_path() . '/resources/rules/default.clash.yaml';
         $customConfig = base_path() . '/resources/rules/custom.clash.yaml';
         if (\File::exists($customConfig)) {
@@ -90,7 +90,7 @@ class Clash
         }
 
         $yaml = Yaml::dump($config, 2, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
-        $yaml = str_replace('$app_name', admin_setting('app_name', 'V2Board'), $yaml);
+        $yaml = str_replace('$app_name', admin_setting('app_name', 'XBoard'), $yaml);
         return response($yaml, 200)
             ->header('subscription-userinfo', "upload={$user['u']}; download={$user['d']}; total={$user['transfer_enable']}; expire={$user['expired_at']}")
             ->header('profile-update-interval', '24')

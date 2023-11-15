@@ -40,7 +40,7 @@ Route::get('/', function (Request $request) {
 //TODO:: 兼容
 Route::get('/' . admin_setting('secure_path', admin_setting('frontend_admin_path', hash('crc32b', config('app.key')))), function () {
     return view('admin', [
-        'title' => admin_setting('app_name', 'V2Board'),
+        'title' => admin_setting('app_name', 'XBoard'),
         'theme_sidebar' => admin_setting('frontend_theme_sidebar', 'light'),
         'theme_header' => admin_setting('frontend_theme_header', 'dark'),
         'theme_color' => admin_setting('frontend_theme_color', 'default'),

@@ -43,7 +43,7 @@ class SendEmailJob implements ShouldQueue
             Config::set('mail.username', admin_setting('email_username', env('mail.username')));
             Config::set('mail.password', admin_setting('email_password', env('mail.password')));
             Config::set('mail.from.address', admin_setting('email_from_address', env('mail.from.address')));
-            Config::set('mail.from.name', admin_setting('app_name', 'V2Board'));
+            Config::set('mail.from.name', admin_setting('app_name', 'XBoard'));
         }
         $params = $this->params;
         $email = $params['email'];

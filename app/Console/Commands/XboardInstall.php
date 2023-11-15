@@ -86,7 +86,7 @@ class XboardInstall extends Command
                     'APP_KEY' => 'base64:' . base64_encode(Encrypter::generateKey('AES-256-CBC')),
                     'DB_CONNECTION' => 'mysql',
                     'DB_HOST' => $this->ask('请输入数据库地址（默认:127.0.0.1）', '127.0.0.1'),
-                    'DB_DATABASE' => $this->ask('请输入数据库名', 'v2board'),
+                    'DB_DATABASE' => $this->ask('请输入数据库名', 'xboard'),
                     'DB_USERNAME' => $this->ask('请输入数据库用户名'),
                     'DB_PASSWORD' => $this->ask('请输入数据库密码'),
                     'INSTALLED' => 'true'

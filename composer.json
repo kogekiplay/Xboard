@@ -1,9 +1,9 @@
 {
-    "name": "v2board/v2board",
+    "name": "xboard/xboard",
     "type": "project",
-    "description": "v2board is a proxy protocol manage.",
+    "description": "xboard is a proxy protocol manage.",
     "keywords": [
-        "v2board",
+        "xboard",
         "v2ray",
         "shadowsocks",
         "trojan",

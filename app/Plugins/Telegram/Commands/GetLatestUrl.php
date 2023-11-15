@@ -13,7 +13,7 @@ class GetLatestUrl extends Telegram {
         $telegramService = $this->telegramService;
         $text = sprintf(
             "%s的最新网址是：%s",
-            admin_setting('app_name', 'V2Board'),
+            admin_setting('app_name', 'XBoard'),
             admin_setting('app_url')
         );
         $telegramService->sendMessage($message->chat_id, $text, 'markdown');

@@ -74,7 +74,7 @@ class UserController extends Controller
                 'subject' => $request->input('subject'),
                 'template_name' => 'notify',
                 'template_value' => [
-                    'name' => admin_setting('app_name', 'V2Board'),
+                    'name' => admin_setting('app_name', 'XBoard'),
                     'url' => admin_setting('app_url'),
                     'content' => $request->input('content')
                 ]
