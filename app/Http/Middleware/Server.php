@@ -25,7 +25,7 @@ class Server
             'node_type' => [
                 'required',
                 'string',
-                'regex:/^(?i)(hysteria|vless|trojan|vmess|v2ray|tuic)$/',
+                'regex:/^(?i)(hysteria|vless|trojan|vmess|v2ray|tuic|shadowsocks|shadowsocks-plugin)$/',
                 function ($attribute, $value, $fail) {
                     // 将值转换为小写
                     request()->merge([$attribute => strtolower($value)]);
