@@ -102,13 +102,13 @@ vi docker-compose.yaml
 dockcer compose up -d
 ```
 
-
-#### 从原版V2board 迁移
-> 从原版V2b Dev分支 10月27日前的版本（在这之后没有修改数据库的版本也可以使用这个方式,其他版本自测）
-```
-php artisan db:seed --class=OriginV2bMigrationsTableSeeder
-// 执行这条命令之后再走正常更新流程
-```
+### 从其他版本迁移
+> 如果你需要从其他版本迁移过来，你需要手动配置好 .env之后按照以下引导操作  
+目前支持迁移的版本
+- v2board dev 23/10/27的版本  [点击跳转迁移引导](./v2b_dev迁移指南.md)
+- v2board 1.7.4  [点击跳转迁移引导](./v2b_1.7.4迁移指南.md)
+- v2board 1.7.3  [点击跳转迁移引导](./v2b_1.7.3迁移指南.md)
+- v2board wyx2685  [点击跳转迁移引导](./v2b_wyx2685迁移指南.md)
 
 ### 宝塔方式(aaPanel) （不推荐，太麻烦了）
 1. 安装aaPanel 
@@ -189,42 +189,21 @@ location ~ .*\.(js|css)?$
     access_log /dev/null; 
 }
 ```
-8. 配置定时任务
+8. 配置守护进程
 >V2board的系统强依赖队列服务，正常使用V2Board必须启动队列服务。下面以aaPanel中supervisor服务来守护队列服务作为演示。  
-aaPanel 面板 > App Store > Tools  
-找到Supervisor进行安装，安装完成后点击设置 > Add Daemon按照如下填写
->>在 Name 填写 V2board  
-在 Run User 选择 www  
-在 Run Dir 选择 站点目录 在 Start Command 填写 php artisan horizon 在 Processes 填写 1  
+1. aaPanel 面板 > App Store > Tools  
+2. 找到Supervisor进行安装，安装完成后点击设置 > Add Daemon按照如下填写
+- 在 Name 填写 Xboard  
+- 在 Run User 选择 www  
+- 在 Run Dir 选择 站点目录 在 Start Command 填写 php artisan horizon 在 Processes 填写 1  
 
 >填写后点击Confirm添加即可运行。
 
+9. 配置定时任务#
+aaPanel 面板 > Cron。
+- 在 Type of Task 选择 Shell Script
+- 在 Name of Task 填写 v2board
+- 在 Period 选择 N Minutes 1 Minute
+- 在 Script content 填写 php /www/wwwroot/路径/artisan schedule:run
 
-### 更新
-#### 传统部署
-1. 下载最新代码覆盖
-> 如果你使用git 拉去的代码可以执行 `git pull` 拉取最新代码
-2. 然后执行更新操作
-```
-composer install
-php artisan Xboard:update
-```
-#### Docker
-1. 修改docker镜像版本
-2. 进入容器执行依赖更新、数据库更新操作
-```
-composer install
-php artisan Xboard:update
-```
-
-
-
-### 回滚
-1. 执行数据库回操作
-```
-php artisan xboard:rollback
-```
-2. 下载旧版代码覆盖，然后执行下述命令重启队列即可无损回滚
-```
-php artisan horizon:terminate
-```
+根据上述信息添加每1分钟执行一次的定时任务。

@@ -15,8 +15,7 @@ class OriginV2bMigrationsTableSeeder extends Seeder
     public function run()
     {
         
-        \DB::table('migrations')->delete();
-        
+        \Artisan::call("migrate:install");
         \DB::table('migrations')->insert(array (
             0 => 
             array (
