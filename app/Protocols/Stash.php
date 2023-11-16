@@ -55,11 +55,7 @@ class Stash
             // }
             if ($item['type'] === 'hysteria') {
                 array_push($proxy, self::buildHysteria($user['uuid'], $item));
-                if($item['version'] == 2){
-                    array_push($proxies, "[Hy2]" . $item['name']);
-                }else{
-                    array_push($proxies, "[Hy]" . $item['name']);
-                }
+                array_push($proxies, $item['name']);
             }
             if ($item['type'] === 'trojan') {
                 array_push($proxy, self::buildTrojan($user['uuid'], $item));
@@ -271,6 +267,7 @@ class Stash
     public static function buildHysteria($password, $server)
     {
         $array = [];
+        $array['name'] = $server['name'];
         $array['server'] = $server['host'];
         $array['port'] = $server['port'];
         $array['up-speed'] = $server['up_mbps'];
@@ -279,7 +276,6 @@ class Stash
         $array['sni'] = $server['server_name']??'';
         switch($server['version']){
             case 1:
-                $array['name'] = "[Hy]" . $server['name'];
                 $array['type'] = 'hysteria';
                 $array['auth-str'] = $password;
                 $array['protocol'] = 'udp';
@@ -287,7 +283,6 @@ class Stash
                 $array['alpn'] = [ServerHysteria::$alpnMap[$server['alpn']]];
                 break;
             case 2:
-                $array['name'] = "[Hy2]" . $server['name'];
                 $array['type'] = 'hysteria2';
                 $array['auth'] = $password;
                 $array['fast-open'] = true;

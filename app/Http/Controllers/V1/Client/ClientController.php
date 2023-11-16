@@ -48,7 +48,7 @@ class ClientController extends Controller
             // 获取服务器列表
             $serverService = new ServerService();
             $servers = $serverService->getAvailableServers($user);
-
+            
             // 判断不满足，不满足的直接过滤掉
             $serversFiltered = collect($servers)->reject(function ($server) use ($typesArr, $filterArr, $region, $isNekoBox, $isStash, $version, $isSingBox){
                 // 过滤类型
@@ -87,7 +87,28 @@ class ClientController extends Controller
                 }
             })->values()->all();
             $this->setSubscribeInfoToServers($serversFiltered, $user, count($servers) - count($serversFiltered));
+            
             $servers = $serversFiltered;
+            
+            // 线路名称增加协议类型
+            if (admin_setting('show_protocol_to_server_enable')){
+                $typePrefixes = [
+                    'hysteria' => [1 => '[Hy]', 2 => '[Hy2]'],
+                    'vless' => '[vless]',
+                    'shadowsocks' => '[ss]',
+                    'vmess' => '[vmess]',
+                    'trojan' => '[trojan]',
+                ];
+                $servers = collect($servers)->map(function($server)use ($typePrefixes){
+                    if (isset($typePrefixes[$server['type']])) {
+                        // 如果是 hysteria 类型，根据版本选择前缀
+                        $prefix = is_array($typePrefixes[$server['type']]) ? $typePrefixes[$server['type']][$server['version']] : $typePrefixes[$server['type']];
+                        // 设置服务器名称
+                        $server['name'] = $prefix . $server['name'];
+                    }
+                    return $server;
+                })->toArray();
+            }
             if ($flag) {
                 foreach (array_reverse(glob(app_path('Protocols') . '/*.php')) as $file) {
                     $file = 'App\\Protocols\\' . basename($file, '.php');

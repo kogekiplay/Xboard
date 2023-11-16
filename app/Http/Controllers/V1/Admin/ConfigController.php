@@ -104,7 +104,8 @@ class ConfigController extends Controller
                 'new_order_event_id' => (int)admin_setting('new_order_event_id', 0),
                 'renew_order_event_id' => (int)admin_setting('renew_order_event_id', 0),
                 'change_order_event_id' => (int)admin_setting('change_order_event_id', 0),
-                'show_info_to_server_enable' => (int)admin_setting('show_info_to_server_enable', 0)
+                'show_info_to_server_enable' => (int)admin_setting('show_info_to_server_enable', 0),
+                'show_protocol_to_server_enable' => (int)admin_setting('show_protocol_to_server_enable', 0),
             ],
             'frontend' => [
                 'frontend_theme' => admin_setting('frontend_theme', 'Xboard'),
