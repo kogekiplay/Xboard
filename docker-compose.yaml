@@ -4,6 +4,7 @@ services:
     build: 
       context: .
     volumes:
-      - ./.env:/www/.env
-      - ./.docker/.data/:/www/.docker/.data/
+      - ./:/www/
+      # - ./.env:/www/.env
+      # - ./.docker/.data/:/www/.docker/.data/
     network_mode: host
