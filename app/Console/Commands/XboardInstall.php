@@ -76,7 +76,7 @@ class XboardInstall extends Command
                     'DB_USERNAME' => '',
                     'DB_PASSWORD' => '',
                     'REDIS_HOST'  => $this->ask('请输入redis地址(默认: 127.0.0.1)', '127.0.0.1'),
-                    'REDIS_PORT'=> $this->ask('请输入redis密码(默认: 6379)', '6379'),
+                    'REDIS_PORT'=> $this->ask('请输入redis端口(默认: 6379)', '6379'),
                     'REDIS_PASSWORD' => $this->ask('请输入redis密码(默认: null)', null),
                     'INSTALLED' => 'true'
                 ];
@@ -93,7 +93,7 @@ class XboardInstall extends Command
                     'DB_USERNAME' => $this->ask('请输入数据库用户名'),
                     'DB_PASSWORD' => $this->ask('请输入数据库密码'),
                     'REDIS_HOST'  => $this->ask('请输入redis地址(默认: 127.0.0.1)', '127.0.0.1'),
-                    'REDIS_PORT'=> $this->ask('请输入redis密码(默认: 6379)', '6379'),
+                    'REDIS_PORT'=> $this->ask('请输入redis端口(默认: 6379)', '6379'),
                     'REDIS_PASSWORD' => $this->ask('请输入redis密码(默认: null)', null),
                     'INSTALLED' => 'true'
                 ];
