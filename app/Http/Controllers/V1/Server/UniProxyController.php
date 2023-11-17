@@ -62,7 +62,7 @@ class UniProxyController extends Controller
 
         // 1、获取节点节点在线人数缓存
         $onlineUsers = Cache::get($cacheKey) ?? [];
-        $onlineCollection = collect($onlineUsers, true);
+        $onlineCollection = collect($onlineUsers);
         // 过滤掉超过600秒的记录
         $onlineCollection = $onlineCollection->reject(function ($item) use ($time) {
             return $item['time'] < ($time - 600);
