@@ -27,10 +27,11 @@ class ClientController extends Controller
         $flag = $request->input('flag') ?? $request->header('User-Agent', '');
         $ip = $request->input('ip') ?? $request->ip();
 
-        preg_match('/(\d+\.\d+\.\d+)/', $flag, $matches);
+        preg_match('/(?<=\/)(\d+\.\d+\.\d+)|(?<=\/)(\d+)/', $flag, $matches);
         $version = $matches[0]??null;
         $isNekoBox = (stripos($flag, 'NekoBox') !== false); //判断是否为Nekobox客户端
         $isSingBox = (stripos($flag, 'sing-box') !== false); //判断是否为stash客户端
+        $isShadowsocket = (stripos($flag, 'Shadowrocket') !== false); //判断是否为shadowsocket客户端
         $isStash = (strpos($flag, 'Stash') !== false);
         if(config('app.debug')){
             Log::channel('daily')->info($flag);
@@ -50,7 +51,7 @@ class ClientController extends Controller
             $servers = $serverService->getAvailableServers($user);
             
             // 判断不满足，不满足的直接过滤掉
-            $serversFiltered = collect($servers)->reject(function ($server) use ($typesArr, $filterArr, $region, $isNekoBox, $isStash, $version, $isSingBox){
+            $serversFiltered = collect($servers)->reject(function ($server) use ($typesArr, $filterArr, $region, $isNekoBox, $isStash, $version, $isSingBox, $isShadowsocket){
                 // 过滤类型
                 if($typesArr){
                     // 默认过滤掉hysteria2 线路
@@ -58,6 +59,7 @@ class ClientController extends Controller
                         && !($isNekoBox && $this->versionCompare($version, '1.2.7'))  //1.2.7<=版本 自动下发hy2
                         && !($isSingBox && $this->versionCompare($version, '1.5.0')) //1.5.0<=版本  自动下发hy2
                         && !($isStash && $this->versionCompare($version, '2.5.0' )) //2.5.0或者以上版本自动下发hy2
+                        && !($isShadowsocket && $this->versionCompare($version, 1993)) //1993 版本或者以上的shadowsocket下发hy2
                         ){ 
                         return true;
                     }
@@ -166,7 +168,7 @@ class ClientController extends Controller
      */
 
     function versionCompare($version1, $version2) {
-        if (!preg_match('/^\d+\.\d+\.\d+$/', $version1) || !preg_match('/^\d+\.\d+\.\d+$/', $version2)) {
+        if (!preg_match('/^\d+\.\d+\.\d+$|\d/', $version1) || !preg_match('/^\d+\.\d+\.\d+$|\d/', $version2)) {
             return false;
         }
         $v1Parts = explode('.', $version1);
