@@ -123,17 +123,33 @@ class MigrateFromV2b extends Command
         }
 
         if (array_key_exists($version, $sqlCommands)) {
-            foreach ($sqlCommands[$version] as $sqlCommand) {
-                // Execute SQL command
-                \DB::statement($sqlCommand);
+            \DB::beginTransaction();
+
+            try {
+                foreach ($sqlCommands[$version] as $sqlCommand) {
+                    // Execute SQL command
+                    \DB::statement($sqlCommand);
+                }
+                
+                $this->info('1️⃣、数据库差异矫正成功');
+
+                // 初始化数据库迁移
+                $this->call('db:seed', ['--class' => 'OriginV2bMigrationsTableSeeder']);
+                $this->info('2️⃣、数据库迁移记录初始化成功');
+
+                $this->call('xboard:update');
+                $this->info('3️⃣、更新成功');
+
+                $this->info("🎉：成功从 $version 迁移到Xboard");
+
+                \DB::commit();
+            } catch (\Exception $e) {
+                // An error occurred, rollback the transaction
+                \DB::rollback();
+                $this->error('迁移失败'. $e->getMessage() );
             }
-            $this->info('1️⃣、数据库差异矫正成功');
-            // 初始化数据库迁移
-            $this->call('db:seed', [ '--class' => 'OriginV2bMigrationsTableSeeder' ]);
-            $this->info('2️⃣、数据库迁移记录初始化成功');
-            $this->call('xboard:update');
-            $this->info('3️⃣、更新成功');
-            $this->info("🎉：成功从 $version 迁移到Xboard");
+
+
         } else {
             $this->error("你所输入的版本未找到");
         }
