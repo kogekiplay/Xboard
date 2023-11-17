@@ -123,8 +123,7 @@ class MigrateFromV2b extends Command
         }
 
         if (array_key_exists($version, $sqlCommands)) {
-            \DB::beginTransaction();
-
+            
             try {
                 foreach ($sqlCommands[$version] as $sqlCommand) {
                     // Execute SQL command
@@ -141,11 +140,8 @@ class MigrateFromV2b extends Command
                 $this->info('3️⃣、更新成功');
 
                 $this->info("🎉：成功从 $version 迁移到Xboard");
-
-                \DB::commit();
             } catch (\Exception $e) {
                 // An error occurred, rollback the transaction
-                \DB::rollback();
                 $this->error('迁移失败'. $e->getMessage() );
             }
 
