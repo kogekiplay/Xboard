@@ -7,4 +7,5 @@ services:
       - ./:/www/
       # - ./.env:/www/.env
       # - ./.docker/.data/:/www/.docker/.data/
+      # - ./config/v2board.php:/www/config/v2board.php
     network_mode: host

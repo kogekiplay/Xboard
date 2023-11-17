@@ -103,6 +103,30 @@ dockcer compose up -d
 ```
 
 ### 从其他版本迁移
+
+#### config/v2board.php 迁移
+> xboard将配置储存到数据库了， 不再使用file进行储存，你需要对配置文件进行迁移。
+1. 将旧的 config/v2board.php 文件复制到 xboard的 config/v2board.php下
+2. 执行下面的命令，即可完成迁移
+```
+php artisan migrateFromV2b config 
+```
+如果你迁移到docker compose  
+1. 在xboard 目录下创建 config文件夹
+2. 复制旧项目的 v2board.php 到config目录
+3. 修改docker-compose.yaml 取消下面代码的注释（删除 "#"）
+```
+  # - ./config/v2board.php:/www/config/v2board.php
+```
+4. 执行下面的命令
+```
+docker compose down
+docker compose run -it --rm php artisan migrateFromV2b config 
+docker compose up -d
+```
+即可完成迁移
+
+#### 数据库迁移
 > 如果你需要从其他版本迁移过来，你需要手动配置好 .env之后按照以下引导操作  
 目前支持迁移的版本
 - v2board dev 23/10/27的版本  [点击跳转迁移引导](./v2b_dev迁移指南.md)

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Setting;
 use Illuminate\Console\Command;
 
 class MigrateFromV2b extends Command
@@ -12,6 +13,10 @@ class MigrateFromV2b extends Command
     public function handle()
     {
         $version = $this->argument('version');
+        if($version === 'config'){
+            $this->MigrateV2ConfigToV2Settings();
+            return;
+        }
 
         // Define your SQL commands based on versions
         $sqlCommands = [
@@ -149,5 +154,28 @@ class MigrateFromV2b extends Command
         } else {
             $this->error("你所输入的版本未找到");
         }
+    }
+
+    public function MigrateV2ConfigToV2Settings()
+    {
+        $configValue = config('v2board') ?? [];
+
+        foreach ($configValue as $k => $v) {
+            // 检查记录是否已存在
+            $existingSetting = Setting::where('name', $k)->first();
+            
+            // 如果记录不存在，则插入
+            if ($existingSetting) {
+                $this->warn("配置 ${k} 在数据库已经存在， 忽略");
+                continue;
+            }
+            Setting::create([
+                'name' => $k,
+                'value' => $v,
+            ]);
+            $this->info("配置 ${k} 迁移成功");
+        }
+
+        $this->info('所有配置迁移完成');
     }
 }
